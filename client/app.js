@@ -11,43 +11,80 @@ if (user && user.photo_url) {
     "https://i.imgur.com/DefaultPfp.png";
 }
 
-// 📦 Load collection from backend
+// 🔥 POPUP FUNCTION
+function openPopup(w) {
+  document.getElementById("popup-img").src = w.image;
+
+  document.getElementById("popup-text").innerText =
+`╭─〔🔥 CHARACTER INFO 🔥〕─╮
+│ 🌀 ID: ${w.id}
+│ 🦊 Name: ${w.name}
+│ 🎴 Anime: ${w.anime}
+│ 🔱 Rarity: ${w.rarity}
+╰───────────────╯`;
+
+  document.getElementById("popup").classList.remove("hidden");
+}
+
+// ❌ Close popup
+document.getElementById("closePopup").onclick = () => {
+  document.getElementById("popup").classList.add("hidden");
+};
+
+// 📦 Load collection
 async function loadCollection() {
-  let res = await fetch("https://your-backend.com/collection?user_id=" + user.id);
-  let data = await res.json();
+  try {
+    let res = await fetch("https://your-backend.com/collection?user_id=" + user.id);
+    let data = await res.json();
 
-  let grid = document.getElementById("grid");
-  grid.innerHTML = "";
+    let grid = document.getElementById("grid");
+    grid.innerHTML = "";
 
-  data.forEach(w => {
-    let div = document.createElement("div");
-    div.className = "card";
-    div.style.backgroundImage = `url(${w.image})`;
+    data.forEach(w => {
+      let div = document.createElement("div");
+      div.className = "card";
+      div.style.backgroundImage = `url(${w.image})`;
 
-    div.onclick = () => {
-      alert(w.name);
-    };
+      // 🔥 click → popup
+      div.onclick = () => openPopup(w);
 
-    grid.appendChild(div);
-  });
+      grid.appendChild(div);
+    });
+
+  } catch (err) {
+    console.log("Error loading collection:", err);
+  }
 }
 
 loadCollection();
 
-// 🔍 Search
+// 🔍 Search system
 document.getElementById("search").addEventListener("input", async (e) => {
   let q = e.target.value;
 
-  let res = await fetch(`https://your-backend.com/search?q=${q}`);
-  let data = await res.json();
+  if (q.length === 0) {
+    loadCollection();
+    return;
+  }
 
-  let grid = document.getElementById("grid");
-  grid.innerHTML = "";
+  try {
+    let res = await fetch(`https://your-backend.com/search?q=${q}`);
+    let data = await res.json();
 
-  data.forEach(w => {
-    let div = document.createElement("div");
-    div.className = "card";
-    div.style.backgroundImage = `url(${w.image})`;
-    grid.appendChild(div);
-  });
+    let grid = document.getElementById("grid");
+    grid.innerHTML = "";
+
+    data.forEach(w => {
+      let div = document.createElement("div");
+      div.className = "card";
+      div.style.backgroundImage = `url(${w.image})`;
+
+      div.onclick = () => openPopup(w);
+
+      grid.appendChild(div);
+    });
+
+  } catch (err) {
+    console.log("Search error:", err);
+  }
 });
