@@ -16,3 +16,7 @@ app.get("/waifus", async (req, res) => {
 });
 
 app.listen(3000, () => console.log("Server running"));
+     
+
+     const cors = require("cors");
+app.use(cors());
