@@ -1,74 +1,32 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Waifu Home</title>
-
-  <!-- Telegram WebApp -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<div class="overlay">
-
-  <!-- Top -->
-  <div class="top-bar">
-    <input type="text" id="search" placeholder="Search waifu...">
-    <img id="pfp" src="">
-  </div>
-
-  <!-- Title -->
-  <h2>Collection</h2>
-
-  <!-- Grid -->
-  <div id="grid"></div>
-
-</div>
-
-<!-- Bottom Nav -->
-<div class="bottom-nav">
-  <div class="nav-btn active">🏡</div>
-  <div class="nav-btn">🛍️</div>
-</div>
-
-<!-- Popup Modal -->
-<div id="popup" class="popup hidden">
-  <div class="popup-box">
-    <div class="close-btn" id="closePopup">✖</div>
-    <img id="popup-img" src="">
-    <pre id="popup-text"></pre>
-  </div>
-</div>
-
-<!-- PROFILE POPUP -->
-<div id="profilePopup" class="popup hidden">
-  <div class="popup-box">
-    <div class="close-btn" id="closeProfile">✖</div>
-    <h2>USER INFORMATION</h2>
-    <img id="profile-pfp" class="big-pfp" src="">
-    <h3 id="profile-id"></h3>
-    <pre id="profile-text"></pre>
-  </div>
-</div>
-
 <script>
 let tg = window.Telegram.WebApp;
 tg.expand();
 
+// 👤 USER + FALLBACK
+let user;
+let userId;
+
+if (tg.initDataUnsafe?.user) {
+  user = tg.initDataUnsafe.user;
+  userId = user.id;
+} else {
+  // 🔥 fallback (testing in browser)
+  userId = 8403604211;
+  user = null;
+}
+
 // 👤 Set Profile Pic
-let user = tg.initDataUnsafe.user;
 if (user && user.photo_url) {
   document.getElementById("pfp").src = user.photo_url;
   document.getElementById("profile-pfp").src = user.photo_url;
   document.getElementById("profile-id").innerText = user.id;
 } else {
   document.getElementById("pfp").src = "https://i.imgur.com/DefaultPfp.png";
+  document.getElementById("profile-id").innerText = userId; // fallback show
 }
 
-// 🔥 BACKEND URL (CHANGE THIS)
-const API = "https://web-7x2t.onrender.com/waifus";
+// 🔥 BACKEND URL (USER BASED)
+const API = `https://web-7x2t.onrender.com/waifus/${userId}`;
 
 let allData = [];
 
@@ -132,7 +90,7 @@ document.getElementById("pfp").onclick = () => {
   document.getElementById("profilePopup").classList.remove("hidden");
 
   document.getElementById("profile-text").innerText =
-    `Username: ${user?.username || "N/A"}`;
+    `Username: ${user?.username || "Test User"}`;
 };
 
 // ❌ Close profile
@@ -143,6 +101,3 @@ document.getElementById("closeProfile").onclick = () => {
 // 🚀 Load on start
 loadWaifus();
 </script>
-
-</body>
-</html>
